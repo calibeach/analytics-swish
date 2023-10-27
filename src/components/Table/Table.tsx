@@ -1,10 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState, useMemo } from "react";
 
-import {
-  StyledTable,
-  StyledSearchAndFilterBarArea,
-} from "./StyledTable";
 import { MarketType } from "../../types";
 import { MarketLineType } from "../../types";
 import { TableRow } from "../TableRow/TableRow";
@@ -12,6 +8,7 @@ import { FilterBar } from "../FilterBar/FilterBar";
 import { SearchBar } from "../SearchBar/SearchBar";
 import { fetchMarkets, fetchLines } from "../../apis";
 import { reducer, initialMarketStatus } from "../../helpers";
+import { StyledTable, StyledSearchAndFilterBarArea } from "./StyledTable";
 
 const Table = () => {
   const [tableData, setTableData] = useState<MarketType[]>([]);
@@ -102,28 +99,26 @@ const Table = () => {
         linesMap.set(key, obj);
       }
 
-      const updatedMarkets = (await Promise.all(
-        marketData.map(async (market) => {
-          const marketLineKey = `${market.playerId}-${market.statTypeId}-${market.line}`;
-          const marketLine = linesMap.get(marketLineKey);
+      const updatedMarkets = marketData.map((market) => {
+        const marketLineKey = `${market.playerId}-${market.statTypeId}-${market.line}`;
+        const marketLine = linesMap.get(marketLineKey);
 
-          const suspendMarket = initialMarketStatus(marketLine);
+        const suspendMarket = initialMarketStatus(marketLine);
 
-          const analysisKey = `${market.playerId}-${market.statType}`;
-          const analysis = analysisMap.get(analysisKey);
+        const analysisKey = `${market.playerId}-${market.statType}`;
+        const analysis = analysisMap.get(analysisKey);
 
-          const high = analysis?.high || "N/A";
-          const low = analysis?.low || "N/A";
+        const high = analysis?.high || "N/A";
+        const low = analysis?.low || "N/A";
 
-          return {
-            ...market,
-            id: uuidv4(),
-            high,
-            low,
-            suspendMarket,
-          };
-        })
-      )) as MarketType[];
+        return {
+          ...market,
+          id: uuidv4(),
+          high,
+          low,
+          suspendMarket,
+        };
+      }) as MarketType[];
       setTableData(updatedMarkets);
     }
 
